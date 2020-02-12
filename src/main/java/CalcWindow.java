@@ -21,19 +21,20 @@ public class CalcWindow extends JFrame {
     public static final String CLEAR = "C";
     public static final String ABOUT_ICON_PATH = "/icon/about_icon.png";
     private static final Dimension windowDimension = new Dimension(400, 300);
-    private static final Dimension fieldsDimension = new Dimension(400, 50);
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final ActionListener calcBtnAListener = e -> {
+        final JButton button = (JButton) e.getSource();
+        updateClickCount();
+        handleButtonClick(button.getText());
+    };
+
     private BoxLayout mainLayout;
     private Calc calc;
     private JTextField currentNumberField;
     private JLabel clickCount;
     private String lastOperation = EMPTY_STRING;
     private JTextField tempResultField;
-    final ActionListener calcBtnAListener = e -> {
-        final JButton button = (JButton) e.getSource();
-        updateClickCount();
-        handleButtonClick(button.getText());
-    };
 
     public CalcWindow() throws HeadlessException {
         super("Calculator");
@@ -68,7 +69,6 @@ public class CalcWindow extends JFrame {
         tempResultField.setEditable(false);
 
         final JPanel tempResPanel = new JPanel();
-//        tempResPanel.setMaximumSize(fieldsDimension);
         tempResPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         final BoxLayout tempResBoxLayout = new BoxLayout(tempResPanel, BoxLayout.Y_AXIS);
         tempResPanel.setLayout(tempResBoxLayout);
@@ -82,7 +82,6 @@ public class CalcWindow extends JFrame {
         currentNumberField.setEditable(false);
 
         final JPanel currentNumberPanel = new JPanel();
-//        currentNumberPanel.setMaximumSize(fieldsDimension);
         currentNumberPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         final BoxLayout currentNumberBoxLayout = new BoxLayout(currentNumberPanel, BoxLayout.Y_AXIS);
         currentNumberPanel.setLayout(currentNumberBoxLayout);
@@ -252,7 +251,7 @@ public class CalcWindow extends JFrame {
 
         if (!isFieldEmpty(currentNumberField)
                 && isFieldEmpty(tempResultField)
-                && !currentNumberField.equals(SUBTRACT)) {
+                && !currentNumberField.getText().equals(SUBTRACT)) {
             tempResultField.setText(currentNumberField.getText());
             currentNumberField.setText(EMPTY_STRING);
             calc = new Calc(new BigDecimal(tempResultField.getText()));
