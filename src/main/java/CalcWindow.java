@@ -7,6 +7,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 
 public class CalcWindow extends JFrame {
@@ -294,7 +295,7 @@ public class CalcWindow extends JFrame {
     }
 
     private void updateResult(final BigDecimal val) {
-        final String value = val.stripTrailingZeros().toPlainString();
+        final String value = val.setScale(15, RoundingMode.HALF_UP).stripTrailingZeros().toPlainString();
         tempResultField.setText(value);
         currentNumberField.setText(EMPTY_STRING);
     }

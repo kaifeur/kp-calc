@@ -10,7 +10,7 @@ public class Calc {
     }
 
     public Calc() {
-        this(new BigDecimal(BigInteger.ZERO).setScale(15, RoundingMode.HALF_UP));
+        this(new BigDecimal(BigInteger.ZERO).setScale(30, RoundingMode.HALF_UP));
     }
 
     BigDecimal add(final BigDecimal val) {
@@ -24,7 +24,7 @@ public class Calc {
     }
 
     BigDecimal divide(final BigDecimal val) {
-        currentResult = currentResult.divide(val, RoundingMode.HALF_UP);
+        currentResult = currentResult.divide(val, 30, RoundingMode.HALF_UP);
         return currentResult;
     }
 
