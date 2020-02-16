@@ -22,6 +22,7 @@ public class CalcWindow extends JFrame {
     public static final String CLEAR = "C";
     public static final String ABOUT_ICON_PATH = "/icon/about_icon.png";
     private static final Dimension windowDimension = new Dimension(400, 300);
+    public static final String CHANGE_SIGN = "+/-";
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final ActionListener calcBtnAListener = e -> {
@@ -145,11 +146,18 @@ public class CalcWindow extends JFrame {
         final JButton clearButton = new JButton(CLEAR);
         clearButton.addActionListener(calcBtnAListener);
         constraints.fill = GridBagConstraints.HORIZONTAL;
-        constraints.weightx = 0;
-        constraints.gridwidth = 4;
+        constraints.weightx = 0.75;
         constraints.gridx = 0;
         constraints.gridy = 1;
         buttonPanel.add(clearButton, constraints);
+
+        final JButton changeSignButton = new JButton(CHANGE_SIGN);
+        changeSignButton.addActionListener(calcBtnAListener);
+        constraints.fill = GridBagConstraints.HORIZONTAL;
+        constraints.weightx = 0.25;
+        constraints.gridx = 1;
+        constraints.gridy = 1;
+        buttonPanel.add(changeSignButton, constraints);
 
         contentPane.add(buttonPanel);
 
@@ -189,7 +197,7 @@ public class CalcWindow extends JFrame {
     }
 
     private void handleButtonClick(final String command) {
-        if (command == null || command.length() != 1) {
+        if (command == null || command.length() != 1 && !command.equals(CHANGE_SIGN)) {
             logger.error("Wrong command (length must be == 1)");
             throw new IllegalArgumentException("Wrong command!");
         }
@@ -248,6 +256,14 @@ public class CalcWindow extends JFrame {
             return;
         }
 
+        if (operation.equals(CHANGE_SIGN)) {
+            if (currentNumberField.getText().contains(SUBTRACT)) {
+                currentNumberField.setText(currentNumberField.getText().replace(SUBTRACT, EMPTY_STRING));
+            } else {
+                currentNumberField.setText(SUBTRACT + currentNumberField.getText());
+            }
+        }
+
         lastOperation = operation;
 
         if (!isFieldEmpty(currentNumberField)
@@ -285,6 +301,7 @@ public class CalcWindow extends JFrame {
                 break;
             default:
                 logger.error("You are trying to perform illegal operation! NO.");
+                lastOperation = EMPTY_STRING;
                 return;
         }
         updateResult(resultValue);
