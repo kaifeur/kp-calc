@@ -258,7 +258,12 @@ public class CalcWindow extends JFrame {
         if (lastOperation.equals(CALCULATE)) {
             clearAll();
         }
-        currentNumberField.setText(currentNumberField.getText().concat(String.valueOf(digit)));
+        if (digit.equals(ZERO)
+                && (currentNumberField.getText().equals(ZERO)
+                || currentNumberField.getText().equals(SUBTRACT + ZERO))) {
+            return;
+        }
+        currentNumberField.setText(currentNumberField.getText().concat(digit));
     }
 
     /**
@@ -314,6 +319,7 @@ public class CalcWindow extends JFrame {
             } else {
                 currentNumberField.setText(SUBTRACT + currentNumberField.getText());
             }
+            return;
         }
 
         lastOperation = operation;
