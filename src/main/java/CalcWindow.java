@@ -10,6 +10,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 
+/**
+ * Класс представляет собой окно калькулятора,
+ * в котором реализована вся логика управления и расчета.
+ */
 public class CalcWindow extends JFrame {
     public static final String DIVIDE = "/";
     public static final String MULTIPLY = "*";
@@ -20,11 +24,16 @@ public class CalcWindow extends JFrame {
     public static final String ZERO = "0";
     public static final String EMPTY_STRING = "";
     public static final String CLEAR = "C";
-    public static final String ABOUT_ICON_PATH = "/icon/about_icon.png";
-    private static final Dimension windowDimension = new Dimension(400, 300);
     public static final String CHANGE_SIGN = "+/-";
 
+    public static final String ABOUT_ICON_PATH = "/icon/about_icon.png";
+    private static final Dimension windowDimension = new Dimension(400, 300);
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    /**
+     * Обработчик нажатий на кнопки калькулятора,
+     * инкрементирует счетчик нажатий и переходит в обработку нажатия.
+     */
     private final ActionListener calcBtnAListener = e -> {
         final JButton button = (JButton) e.getSource();
         updateClickCount();
@@ -38,6 +47,12 @@ public class CalcWindow extends JFrame {
     private String lastOperation = EMPTY_STRING;
     private JTextField tempResultField;
 
+    /**
+     * Конструктор класса. Устанавливает минимальный размер окна,
+     * создает экземпляр класса {@link Calc}.
+     *
+     * @throws HeadlessException if GraphicsEnvironment.isHeadless()
+     */
     public CalcWindow() throws HeadlessException {
         super("Calculator");
         setMinimumSize(windowDimension);
@@ -47,18 +62,37 @@ public class CalcWindow extends JFrame {
         setVisible(true);
     }
 
+    /**
+     * Точка входа в программу.
+     *
+     * @param args ignored
+     */
     public static void main(String[] args) {
         SwingUtilities.invokeLater(CalcWindow::new);
     }
 
+    /**
+     * Отображает диалогове окно при возникновении ошибки.
+     *
+     * @param message сообщение, которое нужно отобразить
+     */
     static void showErrorDialog(final String message) {
         JOptionPane.showMessageDialog(null, message, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
+    /**
+     * Отображает информационное диалоговое окно.
+     *
+     * @param message сообщение, которое нужно отобразить
+     */
     static void showInfoDialog(final String message) {
         JOptionPane.showMessageDialog(null, message, "About", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    /**
+     * Иницииализирует интерфейс калькулятора,
+     * создаются все элементы интерфейса, вешаются обработчики на все кнопки.
+     */
     private void initGUI() {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         final var contentPane = getContentPane();
@@ -196,6 +230,12 @@ public class CalcWindow extends JFrame {
         setJMenuBar(menuBar);
     }
 
+    /**
+     * Обрабатывает нажатия на кнопки калькулятора, принимающий на вход строку-команду,
+     * и в зависимости от типа кнопки перенаправляет вызов далее.
+     *
+     * @param command команда (кнопка) в строковом формате
+     */
     private void handleButtonClick(final String command) {
         if (command == null || command.length() != 1 && !command.equals(CHANGE_SIGN)) {
             logger.error("Wrong command (length must be == 1)");
@@ -209,6 +249,11 @@ public class CalcWindow extends JFrame {
         }
     }
 
+    /**
+     * Обрабатывает нажатие на кнопки цифр.
+     *
+     * @param digit нажатая цифра в строковом формате
+     */
     private void handleDigitButton(final String digit) {
         if (lastOperation.equals(CALCULATE)) {
             clearAll();
@@ -216,6 +261,13 @@ public class CalcWindow extends JFrame {
         currentNumberField.setText(currentNumberField.getText().concat(String.valueOf(digit)));
     }
 
+    /**
+     * Обрабатывает нажатие на кнопки операций, а также символа-разделителя (.).
+     * Тут реализована основная логика приложения – обработка последовательности
+     * нажатий, порядка выполнения операций.
+     *
+     * @param operation операция для выполнения в строковом формате
+     */
     private void handleOperationButton(final String operation) {
         if (operation.equals(CALCULATE)) {
             if (!isFieldEmpty(currentNumberField) && (
@@ -275,10 +327,22 @@ public class CalcWindow extends JFrame {
         }
     }
 
+    /**
+     * Util-метод, проверящий любое JTextField поле на наличие текста.
+     *
+     * @param currentNumberField поле для проверки
+     * @return true/false в зависимости от наличия текста
+     */
     private boolean isFieldEmpty(JTextField currentNumberField) {
         return currentNumberField.getText().isEmpty();
     }
 
+    /**
+     * Производит выполнение одной из математических операций (/, *, -, +).
+     * Перенаправляет вызов в экземпляр класса Calc, после обновляет поле результата.
+     *
+     * @param operation математическая операция, которую необходимо выполнить
+     */
     private void performOperation(final String operation) {
         final BigDecimal resultValue;
         switch (operation) {
@@ -307,20 +371,35 @@ public class CalcWindow extends JFrame {
         updateResult(resultValue);
     }
 
-    private void updateClickCount() {
-        clickCount.setText(String.valueOf(Integer.parseInt(clickCount.getText()) + 1));
-    }
-
+    /**
+     * Обновляет текст в поле {@link CalcWindow#tempResultField} (поле результата).
+     * Перед обновлением округляет значение до 15 знаков после запятой.
+     *
+     * @param val значение, которым необходимо заменить результат
+     */
     private void updateResult(final BigDecimal val) {
         final String value = val.setScale(15, RoundingMode.HALF_UP).stripTrailingZeros().toPlainString();
         tempResultField.setText(value);
         currentNumberField.setText(EMPTY_STRING);
     }
 
+    /**
+     * Метод инкрементации счетчика нажатий на кнопки калькулятора.
+     */
+    private void updateClickCount() {
+        clickCount.setText(String.valueOf(Integer.parseInt(clickCount.getText()) + 1));
+    }
+
+    /**
+     * Выполняет очистку поля текущего числа.
+     */
     private void clearCurrentNumber() {
         currentNumberField.setText(EMPTY_STRING);
     }
 
+    /**
+     * Сбрасывает калькулятор в начальное состояние.
+     */
     private void clearAll() {
         lastOperation = EMPTY_STRING;
         tempResultField.setText(EMPTY_STRING);
